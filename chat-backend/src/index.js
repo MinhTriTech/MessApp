@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import http from "http";
 import { initSocket } from "./sockets/socket.js";
+import messageRoutes from "./routes/messageRoutes.js";
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/messages", messageRoutes);
 
 const server = http.createServer(app);
 

@@ -1,9 +1,13 @@
 import './App.css'
+import Chat from './pages/Chat'
 import TestChat from './pages/TestChat'
 
 function App() {
   return (
-    <TestChat />
+    <div>
+      <TestChat />
+      <Chat conversationId={5}/>
+    </div>
   )
 }
 
