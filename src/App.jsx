@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import './App.css'
-import Chat from './pages/Chat';
+import ChatPage from './pages/ChatPage';
 import Login from './pages/Login'
 import Register from './pages/Register'
 import { AuthContext } from './context/AuthContext';
@@ -17,7 +17,7 @@ function App() {
 
   return (
     <div>
-      <Chat />
+      <ChatPage />
     </div>
   )
 }
