@@ -40,6 +40,8 @@ export const ChatProvider = ({ children }) => {
 
         if (!currentConversationId) return;
 
+        socket.emit("join_conversation", currentConversationRef.current);
+
         fetch(`http://localhost:8000/messages/${currentConversationId}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -47,8 +49,6 @@ export const ChatProvider = ({ children }) => {
         })
         .then(res => res.json())
         .then(setMessages);
-
-        socket.emit("join_conversation", currentConversationId);
 
         const handleReceive = (msg) => {
             setMessages(prev => {
@@ -80,7 +80,7 @@ export const ChatProvider = ({ children }) => {
     
         return () => {
             socket.off("receive_message");
-            socket.emit("leave_conversation", currentConversationId);
+            socket.emit("leave_conversation", currentConversationRef.current);
             setMessages([]); 
         };
     }, [currentConversationId]);
