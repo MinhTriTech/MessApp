@@ -21,9 +21,12 @@ export const ChatProvider = ({ children }) => {
     // Tạo socket
     useEffect(() => {
         socketRef.current = createSocket(token);
+        const socket = socketRef.current;
+
+        socket.emit("join_user_room");
 
         return () => {
-            socketRef.current.disconnect();
+            socket.disconnect();
         };
     }, []);
 
@@ -89,7 +92,7 @@ export const ChatProvider = ({ children }) => {
         }
     
         socket.on("receive_message", handleReceive);
-    
+
         return () => {
             socket.off("receive_message");
             socket.emit("leave_conversation", currentConversationRef.current);
@@ -189,6 +192,35 @@ export const ChatProvider = ({ children }) => {
 
         return () => {
             socket.off("message_seen");
+        };
+    }, []);
+
+    // Lắng nghe socket (tin nhắn global)
+    useEffect(() => {
+        const socket = socketRef.current;
+
+        socket.on("new_message", (msg) => {
+            setConversations(prev => {
+                let updated = prev.map(c => 
+                    c.conversation_id === msg.conversation_id
+                    ? {
+                        ...c,
+                        last_message: msg.content,
+                        last_time: msg.created_at,
+                    }
+                    : c
+                );
+
+                updated.sort(
+                    (a, b) => new Date(b.last_time) - new Date(a.last_time)
+                );
+
+                return updated;
+            });
+        });
+
+        return () => {
+            socket.off("new_message");
         };
     }, []);
 
