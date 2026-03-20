@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState, createContext, useContext } from "react";
 import { createSocket } from "../services/socket";
+import { AuthContext } from "./AuthContext";
 
 const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
+    const { user } = useContext(AuthContext);
+
     const [conversations, setConversations] = useState([]);
     const [messages, setMessages] = useState([]);
     const [currentConversationId, setCurrentConversationId] = useState(null);
@@ -11,6 +14,7 @@ export const ChatProvider = ({ children }) => {
 
     const socketRef = useRef();
     const currentConversationRef = useRef();
+    const lastSeenEmittedMessageIdRef = useRef(null);
 
     const token = localStorage.getItem("token");
 
@@ -26,6 +30,7 @@ export const ChatProvider = ({ children }) => {
     // Gán conversation id cho useref
     useEffect(() => {
         currentConversationRef.current = currentConversationId;
+        lastSeenEmittedMessageIdRef.current = null;
     }, [currentConversationId]);
 
     // Lấy danh sách conversation
@@ -123,6 +128,27 @@ export const ChatProvider = ({ children }) => {
         });
     };
 
+    const emitSeenMessage = () => {
+        const socket = socketRef.current;
+
+        if (!socket || !currentConversationRef.current || messages.length === 0) return;
+
+        const lastMessage = messages[messages.length - 1];
+
+        if (!lastMessage || !user?.id) return;
+        if (lastMessage.sender_id === user.id) return;
+        if ((lastMessage.seenBy || []).includes(user.id)) return;
+
+        if (lastSeenEmittedMessageIdRef.current === lastMessage.id) return;
+
+        socket.emit("mark_seen", {
+            messageId: lastMessage.id
+        });
+
+        lastSeenEmittedMessageIdRef.current = lastMessage.id;
+    };
+
+    // Lắng nghe socket (typing/ stop typing)
     useEffect (() => {
         const socket = socketRef.current;
         
@@ -143,6 +169,29 @@ export const ChatProvider = ({ children }) => {
         }
     }, []);
 
+    // Lắng nghe socket (seen tin nhắn)
+    useEffect(() => {
+        const socket = socketRef.current;
+
+        socket.on("message_seen", ({ messageId, userId }) => {
+            setMessages(prev => 
+                prev.map(msg =>
+                    msg.id === messageId ?
+                    {
+                        ...msg,
+                        seenBy: (msg.seenBy || []).includes(userId)
+                            ? (msg.seenBy || [])
+                            : [...(msg.seenBy || []), userId]
+                    } : msg
+                )
+            );
+        });
+
+        return () => {
+            socket.off("message_seen");
+        };
+    }, []);
+
     return (
         <ChatContext.Provider
         value={{
@@ -156,6 +205,7 @@ export const ChatProvider = ({ children }) => {
             sendMessage,
             emitTyping,
             emitStopTyping,
+            emitSeenMessage,
         }}
         >
             {children}

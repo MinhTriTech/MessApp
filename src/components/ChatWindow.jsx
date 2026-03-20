@@ -1,13 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useChat } from "../context/ChatContext";
+import { AuthContext } from "../context/AuthContext";
 
 export default function ChatWindow({ conversationId }) {
+  const { user } = useContext(AuthContext);
   const [input, setInput] = useState("");
 
   const typingTimeoutRef = useRef(null);
   const isTypingRef = useRef(false);
 
-  const { messages, typingUsers, sendMessage, emitTyping, emitStopTyping } = useChat();
+  const { messages, typingUsers, sendMessage, emitTyping, emitStopTyping, emitSeenMessage } = useChat();
 
   useEffect(() => {
     return () => {
@@ -16,6 +18,10 @@ export default function ChatWindow({ conversationId }) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    emitSeenMessage();
+  }, [conversationId, messages]);
 
   const handleTyping = (e) => {
     const value = e.target.value;
@@ -63,6 +69,10 @@ export default function ChatWindow({ conversationId }) {
     setInput("");
   };
 
+  const isSeen = (msg) => {
+    return msg.sender_id === user?.id && msg.seenBy && msg.seenBy.length > 0;
+  };
+
   if (!conversationId) {
     return <div style={{ padding: "20px" }}>Chọn cuộc hội thoại</div>;
   }
@@ -78,6 +88,7 @@ export default function ChatWindow({ conversationId }) {
       <div style={{ flex: 1, overflowY: "auto", padding: "10px" }}>
         {messages.map((m) => (
           <div key={m.id} style={{ marginBottom: "10px" }}>
+            {isSeen(m) && "✓✓ Seen "}
             <b>{m.sender_id}:</b> {m.content}
           </div>
         ))}
