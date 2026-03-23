@@ -22,11 +22,14 @@ export default function Register() {
     };
 
     return (
-        <div>
-            <input placeholder="email" onChange={e => setEmail(e.target.value)} />
-            <input placeholder="password" type="password" onChange={e => setPassword(e.target.value)} />
-            <input placeholder="name" type="text" onChange={e => setName(e.target.value)} />
-            <button onClick={handleRegister}>Đăng ký</button>
+        <div className="auth-card">
+            <h2 className="auth-title">Đăng ký</h2>
+            <div className="auth-form">
+                <input className="text-input" placeholder="Email" onChange={e => setEmail(e.target.value)} />
+                <input className="text-input" placeholder="Password" type="password" onChange={e => setPassword(e.target.value)} />
+                <input className="text-input" placeholder="Name" type="text" onChange={e => setName(e.target.value)} />
+                <button className="btn" onClick={handleRegister}>Đăng ký</button>
+            </div>
         </div>
     );
 }

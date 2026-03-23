@@ -21,10 +21,13 @@ export default function Login() {
     };
 
     return (
-        <div>
-            <input placeholder="email" onChange={e => setEmail(e.target.value)} />
-            <input placeholder="password" type="password" onChange={e => setPassword(e.target.value)} />
-            <button onClick={handleLogin}>Đăng nhập</button>
+        <div className="auth-card">
+            <h2 className="auth-title">Đăng nhập</h2>
+            <div className="auth-form">
+                <input className="text-input" placeholder="Email" onChange={e => setEmail(e.target.value)} />
+                <input className="text-input" placeholder="Password" type="password" onChange={e => setPassword(e.target.value)} />
+                <button className="btn" onClick={handleLogin}>Đăng nhập</button>
+            </div>
         </div>
     );
 }

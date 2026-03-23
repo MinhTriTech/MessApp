@@ -9,14 +9,14 @@ function App() {
   const { user } = useContext(AuthContext);
 
   if (!user) return (
-    <div>
+    <div className="auth-shell">
       <Login />
       <Register />
     </div>
   );
 
   return (
-    <div>
+    <div className="app-shell">
       <ChatPage />
     </div>
   )

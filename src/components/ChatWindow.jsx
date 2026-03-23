@@ -1,6 +1,92 @@
 import { forwardRef, useContext, useEffect, useRef, useState } from "react";
+import rough from "roughjs/bundled/rough.esm.js";
 import { useChat } from "../context/ChatContext";
 import { AuthContext } from "../context/AuthContext";
+
+function RoughMessageBubble({ message, isMe, isSeen }) {
+  const bubbleRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const drawBubble = () => {
+      const bubbleElement = bubbleRef.current;
+      const canvasElement = canvasRef.current;
+
+      if (!bubbleElement || !canvasElement) {
+        return;
+      }
+
+      const rect = bubbleElement.getBoundingClientRect();
+      const width = Math.max(1, Math.floor(rect.width));
+      const height = Math.max(1, Math.floor(rect.height));
+      const dpr = window.devicePixelRatio || 1;
+
+      canvasElement.width = width * dpr;
+      canvasElement.height = height * dpr;
+      canvasElement.style.width = `${width}px`;
+      canvasElement.style.height = `${height}px`;
+
+      const context = canvasElement.getContext("2d");
+      if (!context) {
+        return;
+      }
+
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      context.clearRect(0, 0, width, height);
+
+      const roughCanvas = rough.canvas(canvasElement);
+      const fillColor = isMe ? "#dcebff" : "#f3e3ff";
+      const stripeColor = isMe ? "#4f7faa" : "#8f6db3";
+
+      roughCanvas.rectangle(1, 1, width - 2, height - 2, {
+        seed: Number(message.id) || undefined,
+        stroke: "#111",
+        strokeWidth: 1.6,
+        roughness: 1.3,
+        bowing: 1.2,
+        fill: fillColor,
+        fillStyle: "hachure",
+        hachureAngle: isMe ? -35 : 35,
+        hachureGap: 5,
+        fillWeight: 1.5,
+        strokeLineDash: [1, 0],
+        fillLineDash: [3, 2],
+        fillLineDashOffset: 2,
+        fillShapeRoughnessGain: 1,
+        fillStroke: stripeColor,
+      });
+    };
+
+    drawBubble();
+
+    let resizeObserver;
+    if (window.ResizeObserver && bubbleRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        drawBubble();
+      });
+      resizeObserver.observe(bubbleRef.current);
+    }
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
+  }, [isMe, message.content, message.id]);
+
+  return (
+    <div className={`message-row ${isMe ? "me" : ""}`} ref={bubbleRef}>
+      <canvas className="message-bubble-canvas" ref={canvasRef} />
+      <div className="message-bubble-content">
+        <div className="message-meta">
+          {isSeen ? "✓✓ Seen • " : ""}
+          <b>{message.sender_id}</b>
+        </div>
+        <div className="message-content">{message.content}</div>
+      </div>
+    </div>
+  );
+}
 
 const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, messageListRef) {
   const { user } = useContext(AuthContext);
@@ -74,38 +160,39 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
   };
 
   if (!conversationId) {
-    return <div style={{ padding: "20px" }}>Chọn cuộc hội thoại</div>;
+    return <div className="chat-empty">Chọn cuộc hội thoại</div>;
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div className="chat-window">
 
       {typingUsers.length > 0 && (
-        <div>Ai đó đang soạn tin nhắn</div>
+        <div className="typing-indicator">Ai đó đang soạn tin nhắn...</div>
       )}
       
-      {/* Message list */}
       <div
         ref={messageListRef}
         onScroll={onScroll}
-        style={{ flex: 1, overflowY: "auto", padding: "10px" }}
+        className="message-list"
       >
         {messages.map((m) => (
-          <div key={m.id} style={{ marginBottom: "10px" }}>
-            {isSeen(m) && "✓✓ Seen "}
-            <b>{m.sender_id}:</b> {m.content}
-          </div>
+          <RoughMessageBubble
+            key={m.id}
+            message={m}
+            isMe={m.sender_id === user?.id}
+            isSeen={isSeen(m)}
+          />
         ))}
       </div>
 
-      {/* Input */}
-      <div style={{ display: "flex", padding: "10px", borderTop: "1px solid #ccc" }}>
+      <div className="message-input-row">
         <input
           value={input}
           onChange={handleTyping}
-          style={{ flex: 1, padding: "8px" }}
+          className="text-input"
+          placeholder="Nhập tin nhắn..."
         />
-        <button onClick={handleSend} style={{ marginLeft: "10px" }}>
+        <button onClick={handleSend} className="btn">
           Send
         </button>
       </div>
