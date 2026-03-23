@@ -1,12 +1,13 @@
-import { forwardRef, useContext, useEffect, useRef, useState } from "react";
+import { forwardRef, useContext, useEffect, useMemo, useRef, useState } from "react";
 import rough from "roughjs/bundled/rough.esm.js";
 import { useChat } from "../context/ChatContext";
 import { AuthContext } from "../context/AuthContext";
 
-function RoughMessageBubble({ message, isMe, isSeen }) {
+function RoughMessageBubble({ message, isMe, isSeen, sender }) {
   const bubbleRef = useRef(null);
   const canvasRef = useRef(null);
 
+  // Hiệu ứng cho mỗi tin nhắn
   useEffect(() => {
     const drawBubble = () => {
       const bubbleElement = bubbleRef.current;
@@ -80,7 +81,7 @@ function RoughMessageBubble({ message, isMe, isSeen }) {
       <div className="message-bubble-content">
         <div className="message-meta">
           {isSeen ? "✓✓ Seen • " : ""}
-          <b>{message.sender_id}</b>
+          <b>{sender.name}</b>
         </div>
         <div className="message-content">{message.content}</div>
       </div>
@@ -95,8 +96,9 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
   const typingTimeoutRef = useRef(null);
   const isTypingRef = useRef(false);
 
-  const { messages, typingUsers, sendMessage, emitTyping, emitStopTyping, emitSeenMessage } = useChat();
+  const { messages, typingUsers, sendMessage, emitTyping, emitStopTyping, emitSeenMessage, participants } = useChat();
 
+  // Typing status
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) {
@@ -105,6 +107,7 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
     };
   }, []);
 
+  // Seen tin nhắn
   useEffect(() => {
     emitSeenMessage();
   }, [conversationId, messages]);
@@ -155,6 +158,16 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
     setInput("");
   };
 
+  const userMap = useMemo(() => {
+    const map = {};
+
+    participants.forEach(user => {
+      map[user.id] = user;
+    });
+
+    return map;
+  }, [participants]);
+
   const isSeen = (msg) => {
     return msg.sender_id === user?.id && msg.seenBy && msg.seenBy.length > 0;
   };
@@ -165,25 +178,29 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
 
   return (
     <div className="chat-window">
-
-      {typingUsers.length > 0 && (
-        <div className="typing-indicator">Ai đó đang soạn tin nhắn...</div>
-      )}
-      
       <div
         ref={messageListRef}
         onScroll={onScroll}
         className="message-list"
       >
-        {messages.map((m) => (
-          <RoughMessageBubble
-            key={m.id}
-            message={m}
-            isMe={m.sender_id === user?.id}
-            isSeen={isSeen(m)}
-          />
-        ))}
+        {messages.map((m) => {
+          const sender = userMap[m.sender_id];
+
+          return (
+            <RoughMessageBubble
+              key={m.id}
+              message={m}
+              isMe={m.sender_id === user?.id}
+              isSeen={isSeen(m)}
+              sender={sender}
+            />
+          );
+        })};
       </div>
+
+      {typingUsers.length > 0 && (
+        <div className="typing-indicator">Ai đó đang soạn tin nhắn...</div>
+      )}
 
       <div className="message-input-row">
         <input

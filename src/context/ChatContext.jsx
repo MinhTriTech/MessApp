@@ -16,6 +16,8 @@ export const ChatProvider = ({ children }) => {
     const chatRef = useRef();
     const lastScrollTopRef = useRef(0);
 
+    const [participants, setParticipants] = useState([]);
+
     const [currentConversationId, setCurrentConversationId] = useState(null);
     const [typingUsers, setTypingUsers] = useState([]);
 
@@ -98,6 +100,7 @@ export const ChatProvider = ({ children }) => {
             socket.off("receive_message");
             socket.emit("leave_conversation", currentConversationRef.current);
             setMessages([]); 
+            setParticipants([]); 
         };
     }, [currentConversationId]);
 
@@ -108,11 +111,19 @@ export const ChatProvider = ({ children }) => {
             }
         });
 
+        const resParticipants = await fetch(`http://localhost:8000/conversations/${currentConversationId}/participants`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        });
+
         const data = await res.json();
+        const dataParticipants = await resParticipants.json();
 
         const msgs = data.messages.reverse();
 
         setMessages(msgs);
+        setParticipants(dataParticipants);
         setHasMore(data.hasMore);
         setCursor(msgs.length > 0 ? msgs[0].created_at : null);
 
@@ -310,6 +321,7 @@ export const ChatProvider = ({ children }) => {
             emitSeenMessage,
             chatRef,
             handleScroll,
+            participants,
         }}
         >
             {children}
