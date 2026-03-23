@@ -1,6 +1,8 @@
 import { forwardRef, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "../context/ChatContext";
 import { AuthContext } from "../context/AuthContext";
+import attachFileIcon from "../assets/attach-file.png";
+import attachFileHoverIcon from "../assets/attach-file-hover.png";
 
 let roughModulePromise;
 
@@ -120,6 +122,8 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
   const { user } = useContext(AuthContext);
   const [input, setInput] = useState("");
   const [roughLib, setRoughLib] = useState(null);
+  const [isFileButtonHovered, setIsFileButtonHovered] = useState(false);
+  const fileInputRef = useRef(null);
 
   const typingTimeoutRef = useRef(null);
   const isTypingRef = useRef(false);
@@ -200,6 +204,25 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
     setInput("");
   };
 
+  const handlePickFile = () => {
+    if (!fileInputRef.current) {
+      return;
+    }
+
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files?.[0];
+
+    if (!selectedFile) {
+      return;
+    }
+
+    sendMessage(`[File] ${selectedFile.name}`);
+    e.target.value = "";
+  };
+
   const userMap = useMemo(() => {
     const map = {};
 
@@ -252,8 +275,26 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
           className="text-input"
           placeholder="Nhập tin nhắn..."
         />
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="file-input-hidden"
+          onChange={handleFileChange}
+        />
+        <button
+          onClick={handlePickFile}
+          className="btn btn-file"
+          type="button"
+          onMouseEnter={() => setIsFileButtonHovered(true)}
+          onMouseLeave={() => setIsFileButtonHovered(false)}
+        >
+          <img
+            src={isFileButtonHovered ? attachFileHoverIcon : attachFileIcon}
+            alt="Đính kèm file"
+          />
+        </button>
         <button onClick={handleSend} className="btn">
-          Send
+          Gửi
         </button>
       </div>
 

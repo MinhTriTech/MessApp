@@ -5,6 +5,19 @@ export default function ConversationList({ onSelect }) {
   const { conversations } = useChat();
 
   const [selectedId, setSelectedId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredConversations = conversations.filter((conv) => {
+    if (!normalizedSearch) {
+      return true;
+    }
+
+    const targetName = (conv.target_name || "").toLowerCase();
+    const lastMessage = (conv.last_message || "").toLowerCase();
+
+    return targetName.includes(normalizedSearch) || lastMessage.includes(normalizedSearch);
+  });
 
   const handleClick = (id) => {
     setSelectedId(id);
@@ -13,9 +26,17 @@ export default function ConversationList({ onSelect }) {
 
   return (
     <div className="conversation-list">
-      <h3 className="conversation-heading">Conversations</h3>
+      <h3 className="conversation-heading">Tin nhắn</h3>
+      <div className="conversation-search-wrap">
+        <input
+          className="text-input conversation-search-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Tìm kiếm hội thoại..."
+        />
+      </div>
 
-      {conversations.map((conv) => (
+      {filteredConversations.map((conv) => (
         <div
           key={conv.conversation_id}
           onClick={() => handleClick(conv.conversation_id)}
@@ -27,6 +48,10 @@ export default function ConversationList({ onSelect }) {
           </div>
         </div>
       ))}
+
+      {filteredConversations.length === 0 && (
+        <div className="conversation-empty">Không tìm thấy hội thoại phù hợp</div>
+      )}
     </div>
   );
 }
