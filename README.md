@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Banner / Logo -->
-<img src="docs/images/banner.png" alt="MessApp Banner" width="100%" />
+<img src="docs/images/banner.png" alt="MessApp Banner" width="30%" />
 
 # MessApp – Frontend
 
