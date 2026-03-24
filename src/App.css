@@ -144,6 +144,9 @@
 }
 
 .conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 12px;
   border-bottom: 1px solid #111;
   cursor: pointer;
@@ -159,9 +162,61 @@
   margin-bottom: 4px;
 }
 
+.conversation-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.conversation-avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+}
+
+.conversation-avatar-core {
+  width: 36px;
+  height: 36px;
+  margin: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.conversation-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.conversation-avatar-fallback {
+  font-size: 13px;
+  font-weight: 700;
+  user-select: none;
+}
+
+.conversation-avatar-outline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.conversation-avatar-outline path {
+  fill: none;
+  stroke: #111;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .conversation-message {
   font-size: 13px;
   color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .conversation-empty {
