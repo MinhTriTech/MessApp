@@ -26,7 +26,7 @@
 
 | Trang Đăng nhập | Trang Chat | Trang Hồ sơ |
 |---|---|---|
-| ![Login](docs/images/login.png) | ![Chat](docs/images/chat.png) | ![Profile](docs/images/profile.png) |
+| ![Login](docs/images/login.png) | ![Chat](docs/images/logo.png) | ![Profile](docs/images/profile.png) |
 
 ---
 
