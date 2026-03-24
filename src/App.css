@@ -362,6 +362,10 @@
   user-select: none;
 }
 
+.profile-view-avatar-clickable {
+  cursor: zoom-in;
+}
+
 .profile-view-avatar-wrap .conversation-avatar-outline {
   display: none;
 }
@@ -586,28 +590,77 @@
 .search-user-card {
   border: 2px solid #111;
   border-radius: 8px;
-  background: #fff;
+  background-color: #fff;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   text-align: left;
   padding: 16px;
   min-height: 112px;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.16s ease, background-color 0.16s ease;
 }
 
 .search-user-card:hover,
 .search-user-card.active {
-  background: #efefef;
+  background-color: #efefef;
+  transform: translateY(-3px);
+}
+
+.search-user-card.has-avatar {
+  background-color: #222;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.search-user-card.has-avatar:hover,
+.search-user-card.has-avatar.active {
+  background-color: #222;
+}
+
+.search-user-card-backdrop {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(165deg, rgba(17, 17, 17, 0.2) 8%, rgba(17, 17, 17, 0.72) 92%);
+  z-index: 0;
+  transition: background 0.16s ease;
+}
+
+.search-user-card.has-avatar:hover .search-user-card-backdrop,
+.search-user-card.has-avatar.active .search-user-card-backdrop {
+  background: linear-gradient(165deg, rgba(17, 17, 17, 0.1) 8%, rgba(17, 17, 17, 0.6) 92%);
+}
+
+.search-user-card-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-end;
 }
 
 .search-user-name {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 8px;
+  display: block;
 }
 
 .search-user-email {
   font-size: 13px;
   color: #333;
   word-break: break-all;
+  display: block;
+}
+
+.search-user-card.has-avatar .search-user-name,
+.search-user-card.has-avatar .search-user-email {
+  color: #fff;
 }
 
 .search-result-empty-note {
@@ -736,8 +789,8 @@
 }
 
 .image-preview-bubble {
-  max-width: min(860px, 94vw);
-  max-height: 88vh;
+  max-width: var(--image-preview-modal-max-width, min(860px, 94vw));
+  max-height: var(--image-preview-modal-max-height, 88vh);
   border: 2px solid #111;
   border-radius: 14px;
   background: #fff;
@@ -747,8 +800,8 @@
 
 .image-preview-image {
   display: block;
-  max-width: min(840px, 92vw);
-  max-height: calc(88vh - 16px);
+  max-width: var(--image-preview-image-max-width, min(840px, 92vw));
+  max-height: var(--image-preview-image-max-height, calc(88vh - 16px));
   width: auto;
   height: auto;
   border-radius: 8px;

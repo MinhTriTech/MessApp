@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 import RoughMessageBubble from "./chat/RoughMessageBubble";
 import SearchResultPanel from "./chat/SearchResultPanel";
 import ChatComposer from "./chat/ChatComposer";
-import ImagePreviewModal from "./chat/ImagePreviewModal";
+import ImagePreviewModal from "./common/ImagePreviewModal";
 
 let roughModulePromise;
 
@@ -65,20 +65,6 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleEsc = (event) => {
-      if (event.key === "Escape") {
-        setPreviewImage(null);
-      }
-    };
-
-    window.addEventListener("keydown", handleEsc);
-
-    return () => {
-      window.removeEventListener("keydown", handleEsc);
     };
   }, []);
 

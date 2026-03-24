@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useChat } from "../context/ChatContext";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import ProfileContextMenu from "./chat/ProfileContextMenu";
 
 const AVATAR_SIZE = 44;
 
@@ -142,6 +143,19 @@ export default function ConversationList({ onSelect }) {
     }));
   };
 
+  const closeContextMenu = () => {
+    setContextMenuState((prev) => {
+      if (!prev.open) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        open: false,
+      };
+    });
+  };
+
   const handleConversationRightClick = (event, targetId) => {
     event.preventDefault();
 
@@ -210,29 +224,6 @@ export default function ConversationList({ onSelect }) {
     };
   }, [searchTerm, setActiveSearchUser, setGlobalSearchResults]);
 
-  useEffect(() => {
-    const closeContextMenu = () => {
-      setContextMenuState((prev) => {
-        if (!prev.open) {
-          return prev;
-        }
-
-        return {
-          ...prev,
-          open: false,
-        };
-      });
-    };
-
-    window.addEventListener("click", closeContextMenu);
-    window.addEventListener("scroll", closeContextMenu, true);
-
-    return () => {
-      window.removeEventListener("click", closeContextMenu);
-      window.removeEventListener("scroll", closeContextMenu, true);
-    };
-  }, []);
-
   return (
     <div className="conversation-list">
       <div className="conversation-heading-row">
@@ -263,13 +254,12 @@ export default function ConversationList({ onSelect }) {
         const seed = hashString(`${conv.conversation_id}-${conv.target_name || "user"}`);
         const roughCirclePath = buildWobblyCirclePath(seed);
         const organicRadius = buildOrganicRadius(seed);
+        const rawTargetAvatar =
+          typeof conv.target_avatar === "string" ? conv.target_avatar.trim() : "";
         const avatarUrl =
-          conv.target_avatar ||
-          conv.target_avatar_url ||
-          conv.avatar ||
-          conv.avatar_url ||
-          conv.profile_image ||
-          "";
+          rawTargetAvatar && rawTargetAvatar.toLowerCase() !== "null"
+            ? rawTargetAvatar
+            : "";
 
         return (
           <div
@@ -314,20 +304,13 @@ export default function ConversationList({ onSelect }) {
         <div className="conversation-empty">Không tìm thấy hội thoại phù hợp</div>
       )}
 
-      {contextMenuState.open && (
-        <div
-          className="conversation-context-menu"
-          style={{ top: contextMenuState.y, left: contextMenuState.x }}
-        >
-          <button
-            type="button"
-            className="conversation-context-menu-item"
-            onClick={handleOpenTargetProfile}
-          >
-            Xem trang cá nhân
-          </button>
-        </div>
-      )}
+      <ProfileContextMenu
+        open={contextMenuState.open}
+        x={contextMenuState.x}
+        y={contextMenuState.y}
+        onClose={closeContextMenu}
+        onOpenProfile={handleOpenTargetProfile}
+      />
     </div>
   );
 }

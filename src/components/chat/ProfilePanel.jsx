@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import AvatarCropModal from "./AvatarCropModal";
+import ImagePreviewModal from "../common/ImagePreviewModal";
 
 const hashString = (value) => {
   let hash = 2166136261;
@@ -87,6 +88,7 @@ export default function ProfilePanel({ user, readOnly = false, loading = false, 
   const [savedProfile, setSavedProfile] = useState(initialProfile);
   const [draftProfile, setDraftProfile] = useState(initialProfile);
   const [cropSourceUrl, setCropSourceUrl] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
   const fileInputRef = useRef(null);
@@ -227,6 +229,17 @@ export default function ProfilePanel({ user, readOnly = false, loading = false, 
     handleCloseCropModal();
   };
 
+  const handlePreviewAvatar = () => {
+    if (!readOnly || !draftProfile.avatar) {
+      return;
+    }
+
+    setPreviewImage({
+      url: draftProfile.avatar,
+      name: `Avatar của ${draftProfile.name || "user"}`,
+    });
+  };
+
   return (
     <div className="chat-window">
       <div className="profile-view-wrap">
@@ -247,7 +260,23 @@ export default function ProfilePanel({ user, readOnly = false, loading = false, 
 
                 <div className="profile-view-avatar-pane">
                   <div className="conversation-avatar-wrap profile-view-avatar-wrap">
-                    <div className="conversation-avatar-core profile-view-avatar-core" style={{ borderRadius: avatarRadius }}>
+                    <div
+                      className={`conversation-avatar-core profile-view-avatar-core ${readOnly && draftProfile.avatar ? "profile-view-avatar-clickable" : ""}`}
+                      style={{ borderRadius: avatarRadius }}
+                      onClick={handlePreviewAvatar}
+                      role={readOnly && draftProfile.avatar ? "button" : undefined}
+                      tabIndex={readOnly && draftProfile.avatar ? 0 : undefined}
+                      onKeyDown={(event) => {
+                        if (!readOnly || !draftProfile.avatar) {
+                          return;
+                        }
+
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          handlePreviewAvatar();
+                        }
+                      }}
+                    >
                       {draftProfile.avatar ? (
                         <img
                           src={draftProfile.avatar}
@@ -355,6 +384,15 @@ export default function ProfilePanel({ user, readOnly = false, loading = false, 
         roughPath={avatarOutlinePath}
         onCancel={handleCloseCropModal}
         onConfirm={handleApplyCroppedAvatar}
+      />
+
+      <ImagePreviewModal
+        previewImage={previewImage}
+        onClose={() => setPreviewImage(null)}
+        modalMaxWidth="min(1120px, 97vw)"
+        modalMaxHeight="92vh"
+        imageMaxWidth="min(1080px, 95vw)"
+        imageMaxHeight="calc(92vh - 16px)"
       />
     </div>
   );
