@@ -2,11 +2,13 @@ import './App.css'
 import { Navigate, Route, Routes } from 'react-router-dom';
 import ChatPage from './pages/ChatPage';
 import ProfilePage from './pages/ProfilePage';
+import SearchPage from './pages/SearchPage';
 import VerifySuccessPage from './pages/VerifySuccessPage';
-import Login from './components/Login'
-import Register from './components/Register'
+
 import { useAuth } from './context/AuthContext';
 import OnboardingGate from './components/OnboardingGate';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function ChatRoute() {
   return (
@@ -22,6 +24,15 @@ function ProfileRoute() {
     <div className="app-shell">
       <OnboardingGate />
       <ProfilePage />
+    </div>
+  );
+}
+
+function SearchRoute() {
+  return (
+    <div className="app-shell">
+      <OnboardingGate />
+      <SearchPage />
     </div>
   );
 }
@@ -52,6 +63,7 @@ function App() {
           <Route path="/" element={<Navigate to="/chat" replace />} />
           <Route path="/chat" element={<ChatRoute />} />
           <Route path="/chat/:conversationId" element={<ChatRoute />} />
+          <Route path="/search" element={<SearchRoute />} />
           <Route path="/profile" element={<ProfileRoute />} />
           <Route path="/profile/:id" element={<ProfileRoute />} />
           <Route path="/verify-success" element={<VerifySuccessPage />} />
@@ -67,6 +79,7 @@ function App() {
           <Route path="/verify-success" element={<VerifySuccessPage />} />
           <Route path="/chat" element={<Navigate to="/login" replace />} />
           <Route path="/chat/:conversationId" element={<Navigate to="/login" replace />} />
+          <Route path="/search" element={<Navigate to="/login" replace />} />
           <Route path="/profile" element={<Navigate to="/login" replace />} />
           <Route path="/profile/:id" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />

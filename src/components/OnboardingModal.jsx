@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import ConfirmationModal from "./common/ConfirmationModal";
+import TextInput from "./common/TextInput";
+import Button from "./common/Button";
 
 const OnboardingModal = () => {
   const { user, setUser } = useAuth();
@@ -10,6 +13,9 @@ const OnboardingModal = () => {
   );
 
   const [name, setName] = useState("");
+  const [showEmailVerifyModal, setShowEmailVerifyModal] = useState(
+    !user.is_verified
+  );
 
   // gửi email
   const handleSendEmail = async () => {
@@ -44,6 +50,7 @@ const OnboardingModal = () => {
     setUser(updatedUser);
 
     if (updatedUser.is_verified) {
+      setShowEmailVerifyModal(false);
       setStep("username");
     }
   };
@@ -71,43 +78,45 @@ const OnboardingModal = () => {
   };
 
   return (
-    <div className="onboarding-overlay">
-      <div className="onboarding-card">
-        {step === "verify" && (
-          <div className="onboarding-content">
-            <h2 className="auth-title">Xác nhận email</h2>
-            <p className="onboarding-text">Vui lòng kiểm tra email để xác nhận tài khoản</p>
+    <>
+      <ConfirmationModal
+        isOpen={showEmailVerifyModal && step === "verify"}
+        title="Xác nhận email"
+        description="Vui lòng kiểm tra email để xác nhận tài khoản"
+        buttons={[
+          {
+            text: "Gửi lại email",
+            onClick: handleSendEmail
+          },
+          {
+            text: "Tôi đã xác nhận",
+            onClick: handleVerified
+          }
+        ]}
+        canCloseOnBackdrop={false}
+      />
 
-            <div className="onboarding-actions">
-              <button className="btn" onClick={handleSendEmail}>
-                Gửi lại email
-              </button>
+      {step === "username" && (
+        <div className="onboarding-overlay">
+          <div className="onboarding-card">
+            <div className="onboarding-content">
+              <h2 className="auth-title">Nhập username</h2>
 
-              <button className="btn" onClick={handleVerified}>
-                Tôi đã xác nhận
-              </button>
+              <input
+                className="text-input"
+                placeholder="Username"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+
+              <Button onClick={handleUsername}>
+                Hoàn tất
+              </Button>
             </div>
           </div>
-        )}
-
-        {step === "username" && (
-          <div className="onboarding-content">
-            <h2 className="auth-title">Nhập username</h2>
-
-            <input
-              className="text-input"
-              placeholder="Username"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-
-            <button className="btn" onClick={handleUsername}>
-              Hoàn tất
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 

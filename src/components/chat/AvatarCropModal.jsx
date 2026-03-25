@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import Button from "../common/Button";
 
 const FRAME_SIZE_FALLBACK = 360;
 const MIN_ZOOM = 1;
@@ -263,10 +264,16 @@ export default function AvatarCropModal({ sourceUrl, roughPath, onCancel, onConf
         />
 
         <div className="avatar-crop-actions">
-          <button type="button" className="btn" onClick={handleReset}>Reset</button>
+          <Button type="button" onClick={handleReset}>
+            Reset
+          </Button>
           <div className="avatar-crop-actions-right">
-            <button type="button" className="btn" onClick={onCancel}>Hủy</button>
-            <button type="button" className="btn" onClick={handleConfirm}>Dùng ảnh này</button>
+            <Button type="button" onClick={onCancel}>
+              Hủy
+            </Button>
+            <Button type="button" onClick={handleConfirm}>
+              Dùng ảnh này
+            </Button>
           </div>
         </div>
       </div>

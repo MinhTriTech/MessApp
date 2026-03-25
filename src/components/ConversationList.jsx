@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useChat } from "../context/ChatContext";
 import { useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ProfileContextMenu from "./chat/ProfileContextMenu";
+import TextInput from "./common/TextInput";
+import Button from "./common/Button";
 
 const AVATAR_SIZE = 44;
 
@@ -98,9 +100,12 @@ export default function ConversationList({ onSelect }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { conversationId: conversationIdParam } = useParams();
+  const [searchParams] = useSearchParams();
 
   const [selectedId, setSelectedId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(() => {
+    return searchParams.get("q") || "";
+  });
   const [contextMenuState, setContextMenuState] = useState({
     open: false,
     x: 0,
@@ -108,6 +113,7 @@ export default function ConversationList({ onSelect }) {
     targetId: null,
   });
   const isProfileRoute = location.pathname.startsWith("/profile");
+  const isSearchRoute = location.pathname.startsWith("/search");
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const filteredConversations = conversations.filter((conv) => {
@@ -125,6 +131,11 @@ export default function ConversationList({ onSelect }) {
     setSelectedId(String(id));
     setActiveSearchUser(null);
     setGlobalSearchResults([]);
+    setSearchTerm("");
+    // Remove query parameter when selecting conversation
+    if (location.search) {
+      navigate(location.pathname, { replace: true });
+    }
     onSelect?.(id);
   };
 
@@ -212,6 +223,12 @@ export default function ConversationList({ onSelect }) {
     setSelectedId(null);
   }, [conversationIdParam, location.pathname]);
 
+  // Sync searchTerm with URL query parameter
+  useEffect(() => {
+    const qParam = searchParams.get("q") || "";
+    setSearchTerm(qParam);
+  }, [searchParams]);
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -222,6 +239,10 @@ export default function ConversationList({ onSelect }) {
             setGlobalSearchResults([]);
           }
         });
+        // Navigate to search page when user types a search term
+        if (!isSearchRoute) {
+          navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+        }
       } else {
         setGlobalSearchResults([]);
       }
@@ -231,15 +252,15 @@ export default function ConversationList({ onSelect }) {
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [searchTerm, setActiveSearchUser, setGlobalSearchResults]);
+  }, [searchTerm, setActiveSearchUser, setGlobalSearchResults, navigate, isSearchRoute]);
 
   return (
     <div className="conversation-list">
       <div className="conversation-heading-row">
         <h3 className="conversation-heading">Tin nhắn</h3>
-        <button
+        <Button
           type="button"
-          className={`btn conversation-profile-btn ${isProfileRoute ? "active" : ""}`}
+          className={`conversation-profile-btn ${isProfileRoute ? "active" : ""}`}
           onClick={handleOpenProfile}
           aria-label="Mở thông tin profile"
           title="Profile"
@@ -248,14 +269,14 @@ export default function ConversationList({ onSelect }) {
             <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
             <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
-        </button>
+        </Button>
       </div>
       <div className="conversation-search-wrap">
-        <input
-          className="text-input conversation-search-input"
+        <TextInput
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Tìm kiếm hội thoại..."
+          className="conversation-search-input"
         />
       </div>
 

@@ -75,6 +75,16 @@ export const ChatProvider = ({ children }) => {
         };
     }, [token, user?.id]);
 
+    // Reset conversation state when user changes (login/logout)
+    useEffect(() => {
+        if (!user?.id) {
+            setCurrentConversationId(null);
+            setMessages([]);
+            setConversations([]);
+            setParticipants([]);
+        }
+    }, [user?.id]);
+
     // Gán conversation id cho useref
     useEffect(() => {
         currentConversationRef.current = currentConversationId;

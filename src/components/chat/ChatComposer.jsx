@@ -1,6 +1,8 @@
 import { useState } from "react";
 import attachFileIcon from "../../assets/attach-file.png";
 import attachFileHoverIcon from "../../assets/attach-file-hover.png";
+import TextInput from "../common/TextInput";
+import Button from "../common/Button";
 
 export default function ChatComposer({
   input,
@@ -14,10 +16,9 @@ export default function ChatComposer({
 
   return (
     <div className="message-input-row">
-      <input
+      <TextInput
         value={input}
         onChange={onInputChange}
-        className="text-input"
         placeholder="Nhập tin nhắn..."
       />
       <input
@@ -26,9 +27,9 @@ export default function ChatComposer({
         className="file-input-hidden"
         onChange={onFileChange}
       />
-      <button
+      <Button
         onClick={onPickFile}
-        className="btn btn-file"
+        className="btn-file"
         type="button"
         onMouseEnter={() => setIsFileButtonHovered(true)}
         onMouseLeave={() => setIsFileButtonHovered(false)}
@@ -37,10 +38,10 @@ export default function ChatComposer({
           src={isFileButtonHovered ? attachFileHoverIcon : attachFileIcon}
           alt="Đính kèm file"
         />
-      </button>
-      <button onClick={onSend} className="btn">
+      </Button>
+      <Button onClick={onSend}>
         Gửi
-      </button>
+      </Button>
     </div>
   );
 }

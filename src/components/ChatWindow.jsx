@@ -2,7 +2,6 @@ import { forwardRef, useContext, useEffect, useMemo, useRef, useState } from "re
 import { useChat } from "../context/ChatContext";
 import { AuthContext } from "../context/AuthContext";
 import RoughMessageBubble from "./chat/RoughMessageBubble";
-import SearchResultPanel from "./chat/SearchResultPanel";
 import ChatComposer from "./chat/ChatComposer";
 import ImagePreviewModal from "./common/ImagePreviewModal";
 import { useNavigate } from "react-router-dom";
@@ -129,26 +128,6 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
     setInput("");
   };
 
-  const handleSelectSearchUser = (targetUser) => {
-    const existingConversation = conversations.find(
-      (conversation) => conversation.target_id === targetUser.id,
-    );
-
-    if (existingConversation?.conversation_id) {
-      setActiveSearchUser(null);
-      setGlobalSearchResults([]);
-      setPendingReceiverId(null);
-      navigate(`/chat/${existingConversation.conversation_id}`);
-      return;
-    }
-
-    setActiveSearchUser(targetUser);
-    setPendingReceiverId(targetUser.id);
-    setGlobalSearchResults([]);
-    setCurrentConversationId(null);
-    navigate("/chat");
-  };
-
   const handlePickFile = () => {
     if (!fileInputRef.current) {
       return;
@@ -252,21 +231,26 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
 
   return (
     <div className="chat-window">
-      <SearchResultPanel
-        results={globalSearchResults}
-        activeSearchUser={activeSearchUser}
-        onSelectSearchUser={handleSelectSearchUser}
-      />
-
-      {!conversationId && !activeSearchUser && globalSearchResults.length === 0 && (
-        <div className="chat-empty">Chọn cuộc hội thoại hoặc chọn 1 user từ kết quả tìm kiếm</div>
+      {!conversationId && !activeSearchUser && (
+        <div className="chat-empty">Chọn cuộc hội thoại để bắt đầu chat</div>
       )}
 
-      {!conversationId && activeSearchUser && globalSearchResults.length === 0 && (
-        <div className="chat-empty">Đang chuẩn bị chat với {activeSearchUser.name}. Gửi tin nhắn đầu tiên để tạo phòng chat.</div>
+      {!conversationId && activeSearchUser && (
+        <>
+          <div className="chat-empty">Đang chuẩn bị chat với {activeSearchUser.name}. Gửi tin nhắn đầu tiên để tạo phòng chat.</div>
+          <div style={{ flex: 1 }}></div>
+          <ChatComposer
+            input={input}
+            onInputChange={handleTyping}
+            onSend={handleSend}
+            fileInputRef={fileInputRef}
+            onFileChange={handleFileChange}
+            onPickFile={handlePickFile}
+          />
+        </>
       )}
 
-      {globalSearchResults.length === 0 && (
+      {conversationId && (
         <>
           <div
             ref={messageListRef}
@@ -278,7 +262,7 @@ const ChatWindow = forwardRef(function ChatWindow({ conversationId, onScroll }, 
 
               return (
                 <RoughMessageBubble
-                  key={m.id}
+                  key={m.id || m.client_temp_id}
                   message={m}
                   isMe={m.sender_id === user?.id}
                   isSeen={isSeen(m)}

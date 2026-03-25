@@ -4,6 +4,7 @@ import ConversationList from "../components/ConversationList";
 import { useChat } from "../context/ChatContext";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
+import Button from "../components/common/Button";
 
 export default function ChatPage () {
   const { conversationId: conversationIdParam } = useParams();
@@ -65,7 +66,9 @@ export default function ChatPage () {
         </div>
       </div>
 
-      <button className="btn logout-btn" onClick={handleLogout}>Đăng xuất</button>
+      <Button className="logout-btn" onClick={handleLogout}>
+        Đăng xuất
+      </Button>
     </>
   );
 }

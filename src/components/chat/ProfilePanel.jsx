@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import AvatarCropModal from "./AvatarCropModal";
 import ImagePreviewModal from "../common/ImagePreviewModal";
+import ConfirmationModal from "../common/ConfirmationModal";
+import TextInput from "../common/TextInput";
+import Button from "../common/Button";
 
 const hashString = (value) => {
   let hash = 2166136261;
@@ -82,7 +85,7 @@ export default function ProfilePanel({
 }) {
   const initialProfile = useMemo(() => {
     const profileName = user?.name || "Bạn";
-    const profileEmail = user?.email || "demo@mess.app";
+    const profileEmail = user?.email || "";
 
     return {
       name: profileName,
@@ -97,7 +100,7 @@ export default function ProfilePanel({
   const [cropSourceUrl, setCropSourceUrl] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const fileInputRef = useRef(null);
   const cropSourceObjectUrlRef = useRef(null);
 
@@ -110,7 +113,6 @@ export default function ProfilePanel({
     return draftProfile.name !== savedProfile.name || draftProfile.avatar !== savedProfile.avatar;
   }, [draftProfile.avatar, draftProfile.name, savedProfile.avatar, savedProfile.name]);
 
-  const profileHandle = `@${draftProfile.email.split("@")[0] || "user"}`;
   const profileInitials = draftProfile.name
     .split(" ")
     .filter(Boolean)
@@ -122,7 +124,6 @@ export default function ProfilePanel({
   const avatarRadius = useMemo(() => buildOrganicRadius(avatarSeed), [avatarSeed]);
 
   const handleChange = (field) => (event) => {
-    setSaveMessage("");
     setDraftProfile((prev) => ({
       ...prev,
       [field]: event.target.value,
@@ -130,7 +131,6 @@ export default function ProfilePanel({
   };
 
   const handleReset = () => {
-    setSaveMessage("");
     setDraftProfile(savedProfile);
   };
 
@@ -142,12 +142,10 @@ export default function ProfilePanel({
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setSaveMessage("Bạn chưa đăng nhập.");
       return;
     }
 
     setIsSaving(true);
-    setSaveMessage("");
 
     try {
       const formData = new FormData();
@@ -168,7 +166,6 @@ export default function ProfilePanel({
       });
 
       if (!res.ok) {
-        setSaveMessage("Không thể lưu profile.");
         return;
       }
 
@@ -183,9 +180,9 @@ export default function ProfilePanel({
       setSavedProfile(nextProfile);
       setDraftProfile(nextProfile);
       onProfileUpdated?.(updatedData);
-      setSaveMessage("Đã lưu profile.");
+      setShowSuccessModal(true);
     } catch {
-      setSaveMessage("Không thể lưu profile.");
+      // Handle error silently
     } finally {
       setIsSaving(false);
     }
@@ -231,7 +228,6 @@ export default function ProfilePanel({
       ...prev,
       avatar: croppedAvatarUrl,
     }));
-    setSaveMessage("");
 
     handleCloseCropModal();
   };
@@ -261,8 +257,6 @@ export default function ProfilePanel({
               <div className="profile-view-main">
                 <div className="profile-view-identity">
                   <div className="profile-view-name">{draftProfile.name}</div>
-                  <div className="profile-view-handle">{profileHandle}</div>
-                  <div className="profile-view-email">{draftProfile.email}</div>
                 </div>
 
                 <div className="profile-view-avatar-pane">
@@ -331,13 +325,13 @@ export default function ProfilePanel({
                   </div>
 
                   {readOnly && typeof onStartMessage === "function" && (
-                    <button
+                    <Button
                       type="button"
-                      className="btn profile-view-message-btn"
+                      className="profile-view-message-btn"
                       onClick={onStartMessage}
                     >
                       Nhắn tin
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -345,12 +339,12 @@ export default function ProfilePanel({
               <div className="profile-view-grid">
                 <div className="profile-view-item">
                   <div className="profile-view-label">Tên hiển thị</div>
-                  <input
-                    className="text-input profile-view-input"
+                  <TextInput
                     type="text"
                     value={draftProfile.name}
                     onChange={handleChange("name")}
                     disabled={readOnly}
+                    className="profile-view-input"
                   />
                 </div>
 
@@ -367,33 +361,44 @@ export default function ProfilePanel({
               {!readOnly && (
                 <div className="profile-view-actions">
                   <div className="profile-view-actions-left">
-                    <button
+                    <Button
                       type="button"
-                      className="btn"
                       onClick={handleReset}
                       disabled={!isDirty}
                     >
                       Reset
-                    </button>
+                    </Button>
                   </div>
                   <div>
-                    <button
+                    <Button
                       type="button"
-                      className="btn"
                       onClick={handleSave}
                       disabled={!isDirty || isSaving}
                     >
                       {isSaving ? "Đang lưu..." : "Lưu"}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
 
-              {!readOnly && saveMessage && <div className="conversation-empty">{saveMessage}</div>}
             </>
           )}
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={showSuccessModal}
+        title="Thành công"
+        description="Hồ sơ của bạn đã được lưu thành công."
+        canCloseOnBackdrop
+        onBackdropClick={() => setShowSuccessModal(false)}
+        buttons={[
+          {
+            text: "OK",
+            onClick: () => setShowSuccessModal(false),
+          },
+        ]}
+      />
 
       <AvatarCropModal
         key={cropSourceUrl || "empty-crop"}
