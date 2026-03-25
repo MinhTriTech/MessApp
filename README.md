@@ -124,32 +124,38 @@ npm run preview
 
 ```
 MessApp-frontend/
-├── public/                         # Tài nguyên tĩnh (favicon, ...)
+├── docs/
+│   └── images/                     # Hình ảnh tài liệu (banner, screenshots)
+├── public/                         # Tài nguyên tĩnh (favicon, icons)
 ├── src/
-│   ├── assets/                     # Hình ảnh, font chữ, ...
+│   ├── assets/                     # Hình ảnh, icons dùng trong ứng dụng
 │   ├── components/
 │   │   ├── chat/
-│   │   │   ├── AvatarCropModal.jsx     # Modal cắt ảnh đại diện
 │   │   │   ├── ChatComposer.jsx        # Ô soạn tin nhắn
-│   │   │   ├── ImagePreviewModal.jsx   # Modal xem trước hình ảnh (chat)
 │   │   │   ├── ProfileContextMenu.jsx  # Menu ngữ cảnh hồ sơ
 │   │   │   ├── ProfilePanel.jsx        # Panel thông tin hồ sơ
 │   │   │   ├── RoughMessageBubble.jsx  # Bong bóng tin nhắn nét vẽ tay
 │   │   │   └── SearchResultPanel.jsx   # Bảng kết quả tìm kiếm người dùng
 │   │   ├── common/
-│   │   │   └── ImagePreviewModal.jsx   # Modal xem trước hình ảnh (dùng chung)
+│   │   │   ├── AvatarCropModal.jsx     # Modal cắt ảnh đại diện
+│   │   │   ├── Button.jsx              # Nút bấm dùng chung
+│   │   │   ├── ConfirmationModal.jsx   # Modal xác nhận hành động
+│   │   │   ├── ImagePreviewModal.jsx   # Modal xem trước hình ảnh
+│   │   │   └── TextInput.jsx           # Ô nhập văn bản dùng chung
 │   │   ├── ChatWindow.jsx          # Cửa sổ chat chính
+│   │   ├── ConversationItem.jsx    # Item hội thoại trong danh sách
 │   │   ├── ConversationList.jsx    # Danh sách hội thoại
-│   │   ├── Login.jsx               # Form đăng nhập
 │   │   ├── OnboardingGate.jsx      # Kiểm tra hoàn thành onboarding
-│   │   ├── OnboardingModal.jsx     # Modal nhập thông tin lần đầu
-│   │   └── Register.jsx            # Form đăng ký
+│   │   └── OnboardingModal.jsx     # Modal nhập thông tin lần đầu
 │   ├── context/
 │   │   ├── AuthContext.jsx         # Quản lý trạng thái xác thực (JWT)
 │   │   └── ChatContext.jsx         # Quản lý trạng thái chat toàn cục
 │   ├── pages/
 │   │   ├── ChatPage.jsx            # Trang chat chính
+│   │   ├── Login.jsx               # Trang đăng nhập
 │   │   ├── ProfilePage.jsx         # Trang hồ sơ cá nhân
+│   │   ├── Register.jsx            # Trang đăng ký
+│   │   ├── SearchPage.jsx          # Trang tìm kiếm người dùng
 │   │   └── VerifySuccessPage.jsx   # Trang xác nhận email thành công
 │   ├── services/
 │   │   ├── api.js                  # Cấu hình Axios (baseURL)
