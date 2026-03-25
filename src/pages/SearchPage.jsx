@@ -43,6 +43,7 @@ export default function SearchPage() {
     // Conversation will be created when user sends first message
     setActiveSearchUser(selectedUser);
     setGlobalSearchResults([]);
+    setCurrentConversationId(null);
     navigate("/chat");
   };
 
