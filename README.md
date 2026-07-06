@@ -61,7 +61,7 @@ MessApp/
 ### 1. System Requirements
 
 - **Node.js**: >= 18
-- **PostgreSQL**: >= 13
+- **Docker & Docker Compose**: For running the PostgreSQL database locally
 
 ### 2. Server (Backend) Setup
 
@@ -84,15 +84,22 @@ EMAIL_USER=your_gmail@gmail.com
 EMAIL_PASS=your_16_char_google_app_password
 ```
 
-> **Note:** You need to create a database on PostgreSQL and run the SQL scripts to initialize the tables.
+> **Note:** Make sure your `.env` file credentials match the ones in `docker-compose.yml` (default `postgres`/`postgres`).
 
-Start the Server:
+### 3. Database Setup (Docker)
+
+To start the PostgreSQL database and automatically initialize the tables, run the following from the root directory:
+```bash
+docker-compose up -d
+```
+
+### 4. Start the Server:
 ```bash
 npm run dev
 ```
 The server will run at `http://localhost:8000`.
 
-### 3. Client (Frontend) Setup
+### 5. Client (Frontend) Setup
 
 Open a new terminal and navigate to the `client` directory:
 ```bash
