@@ -1,215 +1,121 @@
 <div align="center">
 
 <!-- Banner / Logo -->
-<img src="docs/images/banner.png" alt="MessApp Banner" width="30%" />
+<img src="docs/images/banner.png" alt="MessApp Banner" width="40%" />
 
-# MessApp – Frontend
+# MessApp - Real-Time Chat Application
 
-**Ứng dụng nhắn tin thời gian thực – Giao diện người dùng**
+**A Monorepo Project including Frontend (React) and Backend (Node.js)**
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
 ![Socket.IO](https://img.shields.io/badge/Socket.IO-4-010101?logo=socket.io&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13+-336791?logo=postgresql&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 </div>
 
 ---
 
-## 📖 Giới thiệu
+## 📖 Introduction
 
-**MessApp Frontend** là giao diện người dùng của ứng dụng nhắn tin thời gian thực **MessApp**, được xây dựng bằng **React 19** và **Vite 8**. Ứng dụng hỗ trợ đăng ký / đăng nhập, chat trực tiếp qua **Socket.IO**, quản lý hồ sơ cá nhân và nhiều tính năng tiện ích khác.
-
----
-
-## 🔗 Repository liên quan
-
-| Repository | Mô tả |
-|---|---|
-| [MinhTriTech/MessApp-backend](https://github.com/MinhTriTech/MessApp-backend) | Máy chủ backend (API & Socket.IO) |
+**MessApp** is a comprehensive real-time chat application featuring user registration, authentication, user search, and instant messaging with file attachments. This repository utilizes a **Monorepo** architecture, housing the source code for both the **Client (Frontend)** and the **Server (Backend)**.
 
 ---
 
-## 🖼️ Giao diện
+## 🖼️ User Interface
 
-| Trang Đăng nhập | Trang Chat | Trang Hồ sơ |
+| Login Page | Chat Interface | User Profile |
 |---|---|---|
 | ![Login](docs/images/login.png) | ![Chat](docs/images/chat.png) | ![Profile](docs/images/profile.png) |
 
 ---
 
-## ✨ Tính năng
+## ✨ Key Features
 
-- 🔐 **Xác thực người dùng** – Đăng ký, đăng nhập và xác thực email.
-- 💬 **Nhắn tin thời gian thực** – Giao tiếp qua **Socket.IO**, gửi/nhận tin nhắn tức thì.
-- 🖼️ **Gửi hình ảnh** – Đính kèm và xem trước ảnh trong cuộc hội thoại.
-- 📋 **Danh sách hội thoại** – Xem và chọn các cuộc trò chuyện hiện có.
-- 🔍 **Tìm kiếm người dùng** – Tìm kiếm và bắt đầu hội thoại mới.
-- 👤 **Hồ sơ cá nhân** – Xem và cập nhật thông tin, ảnh đại diện.
-- ✂️ **Cắt ảnh đại diện** – Chỉnh sửa ảnh trực tiếp trong trình duyệt.
-- 🎨 **Bong bóng tin nhắn phong cách** – Hiệu ứng nét vẽ tay sử dụng **Rough.js**.
-- 📱 **Điều hướng đầy đủ** – Routing với **React Router DOM v7**.
+- 🔐 **Authentication**: Registration and login with password hashing (bcrypt), JWT tokens, and email verification (Nodemailer).
+- 💬 **Real-time Communication**: Instant messaging powered by **Socket.IO** including "typing..." indicators and "seen" receipts.
+- 🖼️ **Image Sharing**: Support for image attachments and previews via Multer upload.
+- 👤 **User Profiles**: Manage personal information and crop avatars directly in the browser.
+- 🎨 **Stylish UI**: Hand-drawn style message bubbles using **Rough.js**.
 
 ---
 
-## 🛠️ Công nghệ sử dụng
+## 📁 Project Structure
 
-| Công nghệ | Phiên bản | Mục đích |
-|---|---|---|
-| [React](https://react.dev/) | 19 | Xây dựng giao diện người dùng |
-| [Vite](https://vitejs.dev/) | 8 | Công cụ build & máy chủ phát triển |
-| [Socket.IO Client](https://socket.io/) | 4 | Giao tiếp thời gian thực với máy chủ |
-| [Axios](https://axios-http.com/) | 1 | Gọi REST API |
-| [React Router DOM](https://reactrouter.com/) | 7 | Điều hướng trang |
-| [Rough.js](https://roughjs.com/) | 4 | Hiệu ứng đồ họa nét vẽ tay |
-| [ESLint](https://eslint.org/) | 9 | Kiểm tra chất lượng mã nguồn |
-
----
-
-## ⚙️ Yêu cầu hệ thống
-
-- **Node.js** >= 18
-- **npm** >= 9
-- Backend **MessApp** đang chạy (mặc định tại `http://localhost:8000`) – xem repo tại [MinhTriTech/MessApp-backend](https://github.com/MinhTriTech/MessApp-backend)
-
----
-
-## 🚀 Cài đặt và khởi chạy
-
-### 1. Sao chép mã nguồn
-
-```bash
-git clone https://github.com/MinhTriTech/MessApp-frontend.git
-cd MessApp-frontend
+```
+MessApp/
+├── client/           # React 19 Application (Vite)
+├── server/           # Node.js Application (Express & Socket.IO)
+├── docs/             # Documentation assets (Images)
+├── README.md         # Project documentation
+└── .gitignore        # Shared Git ignore rules
 ```
 
-### 2. Cài đặt thư viện
+---
 
+## 🚀 Installation and Setup
+
+### 1. System Requirements
+
+- **Node.js**: >= 18
+- **PostgreSQL**: >= 13
+
+### 2. Server (Backend) Setup
+
+Navigate to the `server` directory:
 ```bash
+cd server
 npm install
 ```
 
-### 3. Cấu hình kết nối Backend
+Create a `.env` file inside the `server` folder with the following configuration:
+```env
+PORT=8000
+DB_USER=your_db_user
+DB_HOST=localhost
+DB_NAME=messapp
+DB_PASSWORD=your_db_password
+DB_PORT=5432
+JWT_SECRET=your_jwt_secret_key
+EMAIL_USER=your_gmail@gmail.com
+EMAIL_PASS=your_16_char_google_app_password
+```
 
-Cập nhật địa chỉ backend trong các tệp sau (nếu backend không chạy ở `http://localhost:8000`):
+> **Note:** You need to create a database on PostgreSQL and run the SQL scripts to initialize the tables.
 
-| Tệp | Cấu hình |
-|---|---|
-| `src/services/api.js` | `baseURL` cho Axios |
-| `src/services/socket.js` | Địa chỉ máy chủ Socket.IO |
-
-### 4. Chạy ở chế độ phát triển
-
+Start the Server:
 ```bash
 npm run dev
 ```
+The server will run at `http://localhost:8000`.
 
-Ứng dụng sẽ khởi động tại `http://localhost:5173`.
+### 3. Client (Frontend) Setup
 
-### 5. Build sản phẩm
-
+Open a new terminal and navigate to the `client` directory:
 ```bash
-npm run build
+cd client
+npm install
 ```
 
-### 6. Xem trước bản build
+Configure the API connection to the Server in the respective files if necessary (defaults to localhost:8000).
 
+Start the Client:
 ```bash
-npm run preview
+npm run dev
 ```
+The application will run at `http://localhost:5173`.
 
 ---
 
-## 📁 Cấu trúc thư mục
+## 🤝 Contributing
 
-```
-MessApp-frontend/
-├── docs/
-│   └── images/                     # Hình ảnh tài liệu (banner, screenshots)
-├── public/                         # Tài nguyên tĩnh (favicon, icons)
-├── src/
-│   ├── assets/                     # Hình ảnh, icons dùng trong ứng dụng
-│   ├── components/
-│   │   ├── chat/
-│   │   │   ├── ChatComposer.jsx        # Ô soạn tin nhắn
-│   │   │   ├── ProfileContextMenu.jsx  # Menu ngữ cảnh hồ sơ
-│   │   │   ├── ProfilePanel.jsx        # Panel thông tin hồ sơ
-│   │   │   ├── RoughMessageBubble.jsx  # Bong bóng tin nhắn nét vẽ tay
-│   │   │   └── SearchResultPanel.jsx   # Bảng kết quả tìm kiếm người dùng
-│   │   ├── common/
-│   │   │   ├── AvatarCropModal.jsx     # Modal cắt ảnh đại diện
-│   │   │   ├── Button.jsx              # Nút bấm dùng chung
-│   │   │   ├── ConfirmationModal.jsx   # Modal xác nhận hành động
-│   │   │   ├── ImagePreviewModal.jsx   # Modal xem trước hình ảnh
-│   │   │   └── TextInput.jsx           # Ô nhập văn bản dùng chung
-│   │   ├── ChatWindow.jsx          # Cửa sổ chat chính
-│   │   ├── ConversationItem.jsx    # Item hội thoại trong danh sách
-│   │   ├── ConversationList.jsx    # Danh sách hội thoại
-│   │   ├── OnboardingGate.jsx      # Kiểm tra hoàn thành onboarding
-│   │   └── OnboardingModal.jsx     # Modal nhập thông tin lần đầu
-│   ├── context/
-│   │   ├── AuthContext.jsx         # Quản lý trạng thái xác thực (JWT)
-│   │   └── ChatContext.jsx         # Quản lý trạng thái chat toàn cục
-│   ├── pages/
-│   │   ├── ChatPage.jsx            # Trang chat chính
-│   │   ├── Login.jsx               # Trang đăng nhập
-│   │   ├── ProfilePage.jsx         # Trang hồ sơ cá nhân
-│   │   ├── Register.jsx            # Trang đăng ký
-│   │   ├── SearchPage.jsx          # Trang tìm kiếm người dùng
-│   │   └── VerifySuccessPage.jsx   # Trang xác nhận email thành công
-│   ├── services/
-│   │   ├── api.js                  # Cấu hình Axios (baseURL)
-│   │   ├── messageService.js       # Lấy lịch sử tin nhắn qua REST API
-│   │   └── socket.js               # Khởi tạo kết nối Socket.IO
-│   ├── App.jsx                     # Component gốc & định nghĩa routes
-│   ├── App.css                     # Style cho App
-│   ├── index.css                   # Style toàn cục
-│   └── main.jsx                    # Điểm khởi đầu của ứng dụng
-├── index.html
-├── vite.config.js
-├── eslint.config.js
-└── package.json
-```
+Contributions are always welcome! Please Fork the repository, create a new branch, commit your changes, and submit a Pull Request.
 
 ---
 
-## 🗺️ Các Route
+## 📄 License
 
-| Route | Mô tả | Yêu cầu đăng nhập |
-|---|---|---|
-| `/login` | Trang đăng nhập | ❌ |
-| `/register` | Trang đăng ký | ❌ |
-| `/verify-success` | Xác nhận email thành công | ❌ |
-| `/chat` | Trang chat (danh sách hội thoại) | ✅ |
-| `/chat/:conversationId` | Trang chat với hội thoại cụ thể | ✅ |
-| `/profile` | Trang hồ sơ cá nhân | ✅ |
-| `/profile/:id` | Trang hồ sơ người dùng khác | ✅ |
-
----
-
-## 🔧 Scripts
-
-| Lệnh | Mô tả |
-|---|---|
-| `npm run dev` | Khởi chạy máy chủ phát triển (hot reload) |
-| `npm run build` | Build ứng dụng cho môi trường production |
-| `npm run preview` | Xem trước bản build production |
-| `npm run lint` | Kiểm tra chất lượng mã nguồn với ESLint |
-
----
-
-## 🤝 Đóng góp
-
-Mọi đóng góp đều được chào đón! Vui lòng làm theo các bước sau:
-
-1. **Fork** repository này.
-2. Tạo branch mới: `git checkout -b feature/ten-tinh-nang`
-3. Commit thay đổi: `git commit -m "feat: thêm tính năng ..."`
-4. Push branch: `git push origin feature/ten-tinh-nang`
-5. Tạo **Pull Request** và mô tả chi tiết thay đổi của bạn.
-
----
-
-## 📄 Giấy phép
-
-Dự án này được phát hành theo giấy phép [MIT](LICENSE).
+This project is licensed under the [MIT](LICENSE) License.
